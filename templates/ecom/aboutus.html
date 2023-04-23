@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>About us</title>
+
+  
+  <style>
+ 
+ h3 {
+  text-align: center;
+  font-size: 48px;
+  margin-top: 100px;
+  animation: slide-up 1s ease-out;
+  color: #fff;
+  text-shadow: 2px 2px #000;
+}
+
+/* Animation for page title */
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+/* Style for page content */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  text-align: justify;
+  font-size: 22px;
+  line-height: 1.7;
+  color: #fff;
+}
+
+.container p {
+  margin-bottom: 20px;
+}
+
+.container p:last-child {
+  margin-bottom: 0;
+}
+
+/* Style for animated text */
+.animated-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.animated-text span {
+  opacity: 0;
+  animation: fade-in 2s ease-in-out forwards;
+  margin: 10px;
+}
+
+.animated-text span:first-child {
+  animation-delay: 0.5s;
+}
+
+.animated-text span:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.animated-text span:nth-child(3) {
+  animation-delay: 1.5s;
+}
+
+/* Animation for animated text */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+/* Style for button */
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: purple;
+  color: #fff;
+  font-size: 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #ff8f00;
+  transform: translateY(-2px);
+}
+
+
+  </style>
+</head>
+
+<body style="background-color: #8c9eff">
+  <div class="container">
+    <h3><span><h2 style="color:#000"> Welcome to EasyShop</h2></span>where we believe that shopping should be easy, affordable, and enjoyable for everyone. Our mission is to provide our customers with an exceptional online shopping experience, from browsing our extensive selection to receiving your purchase at your doorstep.</h3>
+
+    <p>At EasyShop, we are passionate about furniture. We understand that shopping for furniture can be overwhelming, which is why we have curated a collection of high-quality products that cater to all levels of expertise. We only source products from trusted suppliers that meet our strict quality standards, so you can shop with confidence.</p>
+
+    <p>Our team is dedicated to providing excellent customer service. We are always available to answer any questions you may have or provide recommendations based on your individual needs. We believe that building a relationship with our customers is key to our success, and we strive to make every shopping experience a positive one.</p>
+
+    <p>We are committed to sustainability and ethical business practices. We believe that we have a responsibility to minimize our impact on the environment and to support social causes that align with our values. We regularly review our practices to ensure that we are doing our part to create a better world.</p>
+
+    <p>Thank you for choosing EasyShop. We are excited to be a part of your furniture journey and look forward to serving you.</p>
+    <form method="POST" action="{% url 'customerlogin' %}">
+      {% csrf_token %}
+    <button class="button"type="submit">Shop now!</button>
+    </form>
+  </div>
+
+
+</body>
+
+
+
+</html>
