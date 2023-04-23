@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)http://127.0.0.1:8000/send-feedback -->
+<html lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Feedback</title>
+<style media="screen">
+ .center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Style the form container */
+.form-container {
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  margin: 0 auto;
+  padding: 40px;
+  border: 1px solid #ccc;
+}
+
+/* Style the form header */
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.form-header h3 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.form-header p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Style the form labels */
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 18px;
+}
+
+/* Style the form input fields */
+input[type=text],
+textarea {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* Style the form input fields when focused */
+input[type=text]:focus,
+textarea:focus {
+  outline: none;
+  background-color: #e1e1e1;
+}
+
+/* Style the form submit button */
+input[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  margin-top: 30px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Style the form submit button on hover */
+input[type=submit]:hover {
+  background-color: #3e8e41;
+}
+
+/* Style the form required field indicator */
+.required {
+  color: red;
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Style the form success message */
+.alert-success {
+  background-color: #d8f6d0;
+  border: 1px solid #b3e6b3;
+  color: #3c763d;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+</style>
+
+</head>
+
+<body style="background-color: #8c9eff">
+
+
+  <center>
+    <h3 class="alert alert-success">Send Us Your Valuable Feedback !</h3>
+
+
+    <form method="post">
+      <input type="hidden" name="csrfmiddlewaretoken" value="c8HrXUwEvi24BuOq0ZZ8yril1fPwH9Eb6MEhYVADKS9ddKW7c3mhkGr8zYCPeXvI">
+    <ul class="form-style-1">
+        <li>
+            <label>Name <span class="required">*</span></label>
+            <input type="text" name="name" maxlength="40" class="field-long" required="" id="id_name">
+
+        </li>
+
+        <li>
+            <label>Your Feedback <span class="required">*</span></label>
+            <input type="text" name="feedback" maxlength="500" class="field-long field-textarea" id="field5" required="">
+
+        </li>
+        <li>
+            <input type="submit" value="Send Feedback">
+        </li>
+    </ul>
+    </form>
+
+
+  </center>
+
+
+
+
+
+</body></html>
