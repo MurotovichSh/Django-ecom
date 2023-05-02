@@ -22,7 +22,6 @@ def home_view(request):
     return render(request,'ecom/index.html',{'products':products,'product_count_in_cart':product_count_in_cart})
 
 
-#for showing login button for admin(by sumit)
 def adminclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
