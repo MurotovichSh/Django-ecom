@@ -1,11 +1,10 @@
-from django.shortcuts import render,redirect,reverse
+from django.shortcuts import render,redirect
 from . import forms,models
 from django.http import HttpResponseRedirect,HttpResponse
-from django.core.mail import send_mail
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib import messages
-from django.conf import settings
+
 
 
 
@@ -47,22 +46,22 @@ def customer_signup_view(request):
         return HttpResponseRedirect('customerlogin')
     return render(request,'ecom/customersignup.html',context=mydict)
 
-#-----------for checking user iscustomer
+#for checking user iscustomer
 def is_customer(user):
     return user.groups.filter(name='CUSTOMER').exists()
 
 
 
-#---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,CUSTOMER
+#after entering credentials we check whether username and password is of admin, customer
 def afterlogin_view(request):
     if is_customer(request.user):
         return redirect('customer-home')
     else:
         return redirect('admin-dashboard')
 
-#---------------------------------------------------------------------------------
+
 #------------------------ ADMIN RELATED VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+
 @login_required(login_url='adminlogin')
 def admin_dashboard_view(request):
     # for cards on dashboard
@@ -104,7 +103,7 @@ def delete_customer_view(request,pk):
     customer.delete()
     return redirect('view-customer')
 
-
+# admin update customer
 @login_required(login_url='adminlogin')
 def update_customer_view(request,pk):
     customer=models.Customer.objects.get(id=pk)
@@ -123,14 +122,14 @@ def update_customer_view(request,pk):
             return redirect('view-customer')
     return render(request,'ecom/admin_update_customer.html',context=mydict)
 
-# admin view the product
+# admin view the products
 @login_required(login_url='adminlogin')
 def admin_products_view(request):
     products=models.Product.objects.all()
     return render(request,'ecom/admin_products.html',{'products':products})
 
 
-# admin add product by clicking on floating button
+# admin add products
 @login_required(login_url='adminlogin')
 def admin_add_product_view(request):
     productForm=forms.ProductForm()
@@ -141,14 +140,14 @@ def admin_add_product_view(request):
         return HttpResponseRedirect('admin-products')
     return render(request,'ecom/admin_add_products.html',{'productForm':productForm})
 
-
+# admin delete the products 
 @login_required(login_url='adminlogin')
 def delete_product_view(request,pk):
     product=models.Product.objects.get(id=pk)
     product.delete()
     return redirect('admin-products')
 
-
+#admin update product
 @login_required(login_url='adminlogin')
 def update_product_view(request,pk):
     product=models.Product.objects.get(id=pk)
@@ -160,7 +159,7 @@ def update_product_view(request,pk):
             return redirect('admin-products')
     return render(request,'ecom/admin_update_product.html',{'productForm':productForm})
 
-
+#admin view the orders 
 @login_required(login_url='adminlogin')
 def admin_view_booking_view(request):
     orders=models.Order.objects.all()
@@ -172,7 +171,7 @@ def admin_view_booking_view(request):
         ordered_products.append(ordered_product)
         ordered_bys.append(ordered_by)
     return render(request,'ecom/admin_view_booking.html',{'data':zip(ordered_products,ordered_bys,orders)})
-
+#admin delete the orders
 
 @login_required(login_url='adminlogin')
 def delete_order_view(request,pk):
@@ -180,7 +179,7 @@ def delete_order_view(request,pk):
     order.delete()
     return redirect('admin-view-booking')
 
-# for changing status of order (pending,delivered...)
+# status of the ordes (pending,delivered...)
 @login_required(login_url='adminlogin')
 def update_order_view(request,pk):
     order=models.Order.objects.get(id=pk)
@@ -201,9 +200,8 @@ def view_feedback_view(request):
 
 
 
-#---------------------------------------------------------------------------------
-#------------------------ PUBLIC CUSTOMER RELATED VIEWS START ---------------------
-#---------------------------------------------------------------------------------
+#------------------------ PUBLIC CUSTOMER RELATED VIEWS ---------------------
+
 def search_view(request):
     # whatever user write in search box we get in query
     query = request.GET['query']
@@ -215,7 +213,7 @@ def search_view(request):
     else:
         product_count_in_cart=0
 
-    # word variable will be shown in html when user click on search button
+
     word="Searched Result :"
 
     if request.user.is_authenticated:
@@ -223,7 +221,7 @@ def search_view(request):
     return render(request,'ecom/index.html',{'products':products,'word':word,'product_count_in_cart':product_count_in_cart})
 
 
-# any one can add product to cart, no need of signin
+# when adding, no need to sign in
 def add_to_cart_view(request,pk):
     products=models.Product.objects.all()
 
@@ -259,7 +257,7 @@ def add_to_cart_view(request,pk):
 
 # for checkout of cart
 def cart_view(request):
-    #for cart counter
+  
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
         counter=product_ids.split('|')
@@ -267,7 +265,7 @@ def cart_view(request):
     else:
         product_count_in_cart=0
 
-    # fetching product details from db whose id is present in cookie
+    # getting the details of the products in the COOKIES
     products=None
     total=0
     if 'product_ids' in request.COOKIES:
@@ -331,9 +329,9 @@ def send_feedback_view(request):
     
 
 
-#---------------------------------------------------------------------------------
+
 #------------------------ CUSTOMER RELATED VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+
 @login_required(login_url='customerlogin')
 @user_passes_test(is_customer)
 def customer_home_view(request):
@@ -364,17 +362,16 @@ def customer_address_view(request):
         product_count_in_cart=len(set(counter))
     else:
         product_count_in_cart=0
-
+        
+# info is not directly taken from customer data 
     addressForm = forms.AddressForm()
     if request.method == 'POST':
         addressForm = forms.AddressForm(request.POST)
         if addressForm.is_valid():
-            # here we are taking address, email, mobile at time of order placement
-            # we are not taking it from customer account table
-           
             email = addressForm.cleaned_data['Email']
             mobile=addressForm.cleaned_data['Mobile']
             address = addressForm.cleaned_data['Address']
+        
             #for showing total price on payment page.....accessing id from cookies then fetching  price of product from db
             total=0
             if 'product_ids' in request.COOKIES:
@@ -409,9 +406,8 @@ def payment_success_view(request):
         if product_ids != "":
             product_id_in_cart=product_ids.split('|')
             products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-            # Here we get products list that will be ordered by one customer at a time
-
-    
+            
+    # retrieving the info from the COOKIES
     if 'email' in request.COOKIES:
         email=request.COOKIES['email']
     if 'mobile' in request.COOKIES:
@@ -420,8 +416,6 @@ def payment_success_view(request):
         address=request.COOKIES['address']
 
     # here we are placing number of orders as much there is a products
-   
-   
     for product in products:
         models.Order.objects.get_or_create(customer=customer,product=product,status='Pending',email=email,mobile=mobile,address=address)
 
@@ -523,9 +517,9 @@ def edit_profile_view(request):
 
 
 
-#---------------------------------------------------------------------------------
+
 #------------------------ ABOUT US AND CONTACT US VIEWS --------------------
-#---------------------------------------------------------------------------------
+
 def aboutus_view(request):
     return render(request,'ecom/aboutus.html')
 
