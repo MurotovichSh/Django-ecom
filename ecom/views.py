@@ -52,7 +52,7 @@ def is_customer(user):
 
 
 
-#after entering credentials we check whether username and password is of admin, customer
+#to check if a user or an admin
 def afterlogin_view(request):
     if is_customer(request.user):
         return redirect('customer-home')
@@ -203,7 +203,6 @@ def view_feedback_view(request):
 #------------------------ PUBLIC CUSTOMER RELATED VIEWS ---------------------
 
 def search_view(request):
-    # whatever user write in search box we get in query
     query = request.GET['query']
     products=models.Product.objects.all().filter(name__icontains=query)
     if 'product_ids' in request.COOKIES:
@@ -221,7 +220,6 @@ def search_view(request):
     return render(request,'ecom/index.html',{'products':products,'word':word,'product_count_in_cart':product_count_in_cart})
 
 
-# when adding, no need to sign in
 def add_to_cart_view(request,pk):
     products=models.Product.objects.all()
 
@@ -274,7 +272,7 @@ def cart_view(request):
             product_id_in_cart=product_ids.split('|')
             products=models.Product.objects.all().filter(id__in = product_id_in_cart)
 
-            #for total price shown in cart
+            #for total price shown in the cart
             for p in products:
                 total=total+p.price
     return render(request,'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
@@ -295,7 +293,6 @@ def remove_from_cart_view(request,pk):
         product_ids = request.COOKIES['product_ids']
         product_id_in_cart=product_ids.split('|')
         product_id_in_cart=list(set(product_id_in_cart))
-        print(request.COOKIES)
         
         product_id_in_cart.remove(str(pk))
         products=models.Product.objects.all().filter(id__in = product_id_in_cart)
@@ -346,7 +343,7 @@ def customer_home_view(request):
 
 
 
-# shipment address before placing order
+
 @login_required(login_url='customerlogin')
 def customer_address_view(request):
     # this is for checking whether product is present in cart or not
@@ -372,7 +369,7 @@ def customer_address_view(request):
             mobile=addressForm.cleaned_data['Mobile']
             address = addressForm.cleaned_data['Address']
         
-            #for showing total price on payment page.....accessing id from cookies then fetching  price of product from db
+            #to get the total price from cookies
             total=0
             if 'product_ids' in request.COOKIES:
                 product_ids = request.COOKIES['product_ids']
@@ -392,8 +389,7 @@ def customer_address_view(request):
 
 
 
-# here we are just directing to this view...actually we have to check whther payment is successful or not
-#only then this view should be accessed
+# accessed after successfull payment
 @login_required(login_url='customerlogin')
 def payment_success_view(request):
     customer=models.Customer.objects.get(user_id=request.user.id)
@@ -407,7 +403,7 @@ def payment_success_view(request):
             product_id_in_cart=product_ids.split('|')
             products=models.Product.objects.all().filter(id__in = product_id_in_cart)
             
-    # retrieving the info from the COOKIES
+
     if 'email' in request.COOKIES:
         email=request.COOKIES['email']
     if 'mobile' in request.COOKIES:
