@@ -441,7 +441,7 @@ def my_order_view(request):
 
 
 
-#--------------for discharge patient bill (pdf) download and printing
+#to download the bill and print 
 import io
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -514,22 +514,12 @@ def edit_profile_view(request):
 
 
 
-#------------------------ ABOUT US AND CONTACT US VIEWS --------------------
+
 
 def aboutus_view(request):
     return render(request,'ecom/aboutus.html')
 
-def contactus_view(request):
-    sub = forms.ContactusForm()
-    if request.method == 'POST':
-        sub = forms.ContactusForm(request.POST)
-        if sub.is_valid():
-            email = sub.cleaned_data['Email']
-            name=sub.cleaned_data['Name']
-            message = sub.cleaned_data['Message']
-            send_mail(str(name)+' || '+str(email),message, settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
-            return render(request, 'ecom/contactussuccess.html')
-    return render(request, 'ecom/contactus.html', {'form':sub})
+
 def button_click_view(request):
     if request.method == 'POST':
         # Get the form data
