@@ -220,100 +220,33 @@ def search_view(request):
     return render(request,'ecom/index.html',{'products':products,'word':word,'product_count_in_cart':product_count_in_cart})
 
 
-def add_to_cart_view(request,pk):
-    products=models.Product.objects.all()
-
-    #for cart counter, fetching products ids added by customer from cookies
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart=1
-
-    response = render(request, 'ecom/index.html',{'products':products,'product_count_in_cart':product_count_in_cart})
-
-    #adding product id to cookies
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        if product_ids=="":
-            product_ids=str(pk)
-        else:
-            product_ids=product_ids+"|"+str(pk)
-        response = redirect('customer-home')
-        response.set_cookie('product_ids', product_ids)
-    else:
-        response = redirect('customer-home')
-        response.set_cookie('product_ids', pk)
-
-    product=models.Product.objects.get(id=pk)
-    messages.info(request, product.name + ' added to cart successfully!')
-
-    return response
-
-
-
+def add_to_cart_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(customer=request.user.customer)
+        cart.products.add(product)
+        cart.save()
+    return redirect('customer-home')
 # for checkout of cart
+
 def cart_view(request):
-  
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart=0
+    # get the cart for the current customer
+    cart = Cart.objects.get(customer=request.user.customer)
+    products = cart.products.all()
+    total_price = sum([cart_product.price for cart_product in cart.products.all()])
+    cart.save()
+    return render(request, 'ecom/cart.html', {
+        'products': products,
+        'total_price': total_price,
+    })
 
-    # getting the details of the products in the COOKIES
-    products=None
-    total=0
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        if product_ids != "":
-            product_id_in_cart=product_ids.split('|')
-            products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-
-            #for total price shown in the cart
-            for p in products:
-                total=total+p.price
-    return render(request,'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
-
-
-def remove_from_cart_view(request,pk):
-    #for counter in cart
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart=0
-
-    # removing product id from cookie
-    total=0
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        product_id_in_cart=product_ids.split('|')
-        product_id_in_cart=list(set(product_id_in_cart))
-        
-        product_id_in_cart.remove(str(pk))
-        products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-        #for total price shown in cart after removing product
-        for p in products:
-            total=total+p.price
-
-        #  for update coookie value after removing product id in cart
-        value=""
-        for i in range(len(product_id_in_cart)):
-            if i==0:
-                value=value+product_id_in_cart[0]
-            else:
-                value=value+"|"+product_id_in_cart[i]
-        response = render(request, 'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
-        if value=="":
-            response.delete_cookie('product_ids')
-        response.set_cookie('product_ids',value)
-
-        return response
-
+def remove_from_cart_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.user.is_authenticated:
+        cart,created= Cart.objects.get_or_create(customer=request.user.customer)
+        cart.products.remove(product)
+        cart.save()
+    return redirect('cart')
 
 def send_feedback_view(request):
     feedbackForm=forms.FeedbackForm()
@@ -332,60 +265,44 @@ def send_feedback_view(request):
 @login_required(login_url='customerlogin')
 @user_passes_test(is_customer)
 def customer_home_view(request):
-    products=models.Product.objects.all()
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart=0
+    products = Product.objects.all()
+    cart = Cart.objects.get(customer=request.user.customer)
+    cart_products = cart.products.all()
+    product_count_in_cart=cart_products.count
     return render(request,'ecom/customer_home.html',{'products':products,'product_count_in_cart':product_count_in_cart})
 
 
 
-
+@login_required(login_url='customerlogin')
 @login_required(login_url='customerlogin')
 def customer_address_view(request):
-    # this is for checking whether product is present in cart or not
-    product_in_cart=False
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        if product_ids != "":
-            product_in_cart=True
-    #for counter in cart
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart=0
-        
-# info is not directly taken from customer data 
+    cart = Cart.objects.get(customer=request.user.customer)
+    cart_products = cart.products.all()
+    product_count_in_cart = cart_products.count()
+
     addressForm = forms.AddressForm()
     if request.method == 'POST':
         addressForm = forms.AddressForm(request.POST)
         if addressForm.is_valid():
             email = addressForm.cleaned_data['Email']
-            mobile=addressForm.cleaned_data['Mobile']
+            mobile = addressForm.cleaned_data['Mobile']
             address = addressForm.cleaned_data['Address']
-        
-            #to get the total price from cookies
-            total=0
-            if 'product_ids' in request.COOKIES:
-                product_ids = request.COOKIES['product_ids']
-                if product_ids != "":
-                    product_id_in_cart=product_ids.split('|')
-                    products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-                    for p in products:
-                        total=total+p.price
 
-            response = render(request, 'ecom/payment.html',{'total':total})
-            response.set_cookie('email',email)
-            response.set_cookie('mobile',mobile)
-            response.set_cookie('address',address)
+            # Get the total price of the products in the cart
+            total_price = sum([cart_product.price for cart_product in cart.products.all()])
+
+            response = render(request, 'ecom/payment.html', {'total_price': total_price})
+            response.set_cookie('email', email)
+            response.set_cookie('mobile', mobile)
+            response.set_cookie('address', address)
             return response
-    return render(request,'ecom/customer_address.html',{'addressForm':addressForm,'product_in_cart':product_in_cart,'product_count_in_cart':product_count_in_cart})
 
+    product_in_cart = cart_products.exists()
+    return render(request, 'ecom/customer_address.html', {
+        'addressForm': addressForm,
+        'product_in_cart': product_in_cart,
+        'product_count_in_cart': product_count_in_cart
+    })
 
 
 
