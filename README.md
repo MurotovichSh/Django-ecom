@@ -1,4 +1,4 @@
-# Overwiev
+# Overview
 This is an e-commerce website build using the Python web framework Django. In this website customers can browse and buy products online. 
 Authentication, shopping cart, order managment functionalities are also included. At the end of the purchasing process, it is possible to dowload and print the overall bill.
 Website url: http://shohruhbek.pythonanywhere.com
