@@ -13,5 +13,6 @@ Shopping cart: Customers can add products to their shopping cart and update the 
 Order management: Admin users can view and manage orders placed by customers.
 # Acknowledgement
 Python documentation: The official documentation for the Python programming language, which was used to learn the basics of Python syntax and data structures.
+
 Django documentation: The official documentation for the Django web framework, which was used to learn how to build web applications with Python and Django.
 
